@@ -58,7 +58,7 @@ exports.lambdaHandler = async (event, context) => {
             response = {
                 'statusCode': 400,
                 'body': JSON.stringify({
-                    message : "Price too low"
+                    error : "Price too low"
                 })
             }
         } else {
@@ -97,7 +97,12 @@ exports.lambdaHandler = async (event, context) => {
         }        
     } catch (err) {
         console.log(err);
-        return err;
+        return {
+            'statusCode': 400,
+            'body': JSON.stringify({
+                error : err.message
+            })
+        };
     }
 
     return response;
