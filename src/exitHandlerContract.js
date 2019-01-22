@@ -5,23 +5,23 @@ const EXIT_HANDLER_ABI = [
     constant: false,
     inputs: [
       {
-        name: '_youngestInputProof',
+        name: '',
         type: 'bytes32[]',
       },
       {
-        name: '_proof',
+        name: '',
         type: 'bytes32[]',
       },
       {
-        name: '_outputIndex',
+        name: '',
         type: 'uint8',
       },
       {
-        name: '_inputIndex',
+        name: '',
         type: 'uint8',
       },
       {
-        name: 'signedData',
+        name: '',
         type: 'bytes32[]',
       },
     ],
@@ -29,6 +29,39 @@ const EXIT_HANDLER_ABI = [
     outputs: [],
     payable: true,
     stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: 'erc20TokenCount',
+    outputs: [
+      {
+        name: '',
+        type: 'uint16',
+      },
+    ],
+    payable: false,
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    constant: true,
+    inputs: [
+      {
+        name: '_color',
+        type: 'uint16',
+      },
+    ],
+    name: 'getTokenAddr',
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+      },
+    ],
+    payable: false,
+    stateMutability: 'view',
     type: 'function',
   },
 ];
@@ -50,5 +83,13 @@ export default class ExitHandlerContract extends Contract {
       inputIndex,
       signedData,
     );
+  }
+
+  erc20TokenCount() {
+    return this.call(this.contract.erc20TokenCount);
+  }
+
+  getTokenAddr(color) {
+    return this.call(this.contract.getTokenAddr, color);
   }
 }

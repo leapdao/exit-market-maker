@@ -11,24 +11,21 @@ export default class Contract {
     ...args
   ) {
     return new Promise((resolve, reject) => {
-      contractMethod.estimateGas(...args, (gasErr, gas) => {
-        if (gasErr) {
-          reject(`Estimate error: ${JSON.stringify(gasErr)}`);
-        } else if (gas > maxGas) {
-          reject(`Too many gas required for tx (${gas})`);
-        } else {
-          contractMethod.sendTransaction(
-            ...args,
-            { from: this.senderAddr, gas: Math.round(gas * 1.2) },
-            (txErr, txHash) => {
-              if (txErr) {
-                return reject(`Tx error: ${txErr}`);
-              }
-              return resolve(txHash);
-            },
-          );
-        }
-      });
+      const gas = 300000;
+      if (gas > maxGas) {
+        reject(`Too many gas required for tx (${gas})`);
+      } else {
+        contractMethod.sendTransaction(
+          ...args,
+          { from: this.senderAddr, gas: Math.round(gas * 1.2) },
+          (txErr, txHash) => {
+            if (txErr) {
+              return reject(`Tx error: ${txErr}`);
+            }
+            return resolve(txHash);
+          },
+        );
+      }
     });
   }
 
