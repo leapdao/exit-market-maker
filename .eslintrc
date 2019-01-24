@@ -1,0 +1,12 @@
+{
+  "extends": "airbnb-base",
+  "rules": {
+    "max-len": ["error", {
+      "ignoreComments": true,
+      "code": 120
+    }]
+  },
+  "plugins": [
+    "import"
+  ]
+}
