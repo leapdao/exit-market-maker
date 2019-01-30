@@ -32,6 +32,20 @@ const EXIT_HANDLER_ABI = [
     type: 'function',
   },
   {
+    "constant": true,
+    "inputs": [],
+    "name": "exitStake",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     constant: true,
     inputs: [],
     name: 'erc20TokenCount',
@@ -73,10 +87,10 @@ export default class ExitHandlerContract extends Contract {
     this.contract = this.web3.eth.contract(EXIT_HANDLER_ABI).at(exitHandlerAddr);
   }
 
-  startBoughtExit(inputProof, transferProof, outputIndex, inputIndex, signedData) {
+  startBoughtExit(exitStake, inputProof, transferProof, outputIndex, inputIndex, signedData) {
     return this.sendTransaction(
       this.contract.startBoughtExit,
-      3000000,
+      exitStake,
       inputProof,
       transferProof,
       outputIndex,
@@ -87,6 +101,10 @@ export default class ExitHandlerContract extends Contract {
 
   erc20TokenCount() {
     return this.call(this.contract.erc20TokenCount);
+  }
+
+  exitStake() {
+    return this.call(this.contract.exitStake);
   }
 
   getTokenAddr(color) {

@@ -35,7 +35,10 @@ class ExitManager {
 
     // check color
     const color = tx.outputs[outputIndex].color;
-    const tokenAddr = await this.exitHandler.getTokenAddr(color);
+    const [tokenAddr, exitStake] = await Promise.all([
+      this.exitHandler.getTokenAddr(color),
+      this.exitHandler.exitStake(),
+    ]);
     if (color > 32768 || !tokenAddr || tokenAddr === EMPTY_ADDR || tokenAddr === '0x') {
       throw new BadRequest(`bad color ${color}.`);
     }

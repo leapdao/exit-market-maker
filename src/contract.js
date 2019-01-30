@@ -7,25 +7,21 @@ export default class Contract {
 
   sendTransaction(
     contractMethod,
-    maxGas,
+    value,
     ...args
   ) {
     return new Promise((resolve, reject) => {
       const gas = 300000;
-      if (gas > maxGas) {
-        reject(`Too many gas required for tx (${gas})`);
-      } else {
-        contractMethod.sendTransaction(
-          ...args,
-          { from: this.senderAddr, gas: Math.round(gas * 1.2) },
-          (txErr, txHash) => {
-            if (txErr) {
-              return reject(`Tx error: ${txErr}`);
-            }
-            return resolve(txHash);
-          },
-        );
-      }
+      contractMethod.sendTransaction(
+        ...args,
+        { from: this.senderAddr, value, gas: Math.round(gas * 1.2) },
+        (txErr, txHash) => {
+          if (txErr) {
+            return reject(`Tx error: ${txErr}`);
+          }
+          return resolve(txHash);
+        },
+      );
     });
   }
 

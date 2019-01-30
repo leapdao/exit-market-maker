@@ -13,6 +13,7 @@ chai.use(sinonChai);
 const alice = '0x83B3525e17F9eAA92dAE3f9924cc333c94C7E98a';
 const alicePriv = '0xbd54b17c48ac1fc91d5ef2ef02e9911337f8758e93c801b619e5d178094486cc';
 const exitHandler = '0x791186143a8fe5f0287f0DC35df3A71354f607b6';
+const DEFAULT_EXIT_STAKE = new BigNumber(1000000000000000000);
 
 const contract = {
   startBoughtExit: {
@@ -21,6 +22,7 @@ const contract = {
   balanceOf: { call() {} },
   allowance: { call() {} },
   getTokenAddr: { call() {} },
+  exitStake: { call() {} },
 };
 
 const web3 = { eth: {
@@ -85,6 +87,7 @@ describe('Exit Manager', () => {
 
     // mock blockchain
     sinon.stub(contract.getTokenAddr, 'call').yields(null, alice);
+    sinon.stub(contract.exitStake, 'call').yields(null, DEFAULT_EXIT_STAKE);
 
     const exitHandlerContract = new ExitHandlerContract(web3, alice, exitHandler);
     const rate = 900;
@@ -122,6 +125,7 @@ describe('Exit Manager', () => {
     sinon.stub(contract.balanceOf, 'call').yields(null, new BigNumber(30));
     sinon.stub(contract.allowance, 'call').yields(null, new BigNumber(100));
     sinon.stub(contract.getTokenAddr, 'call').yields(null, alice);
+    sinon.stub(contract.exitStake, 'call').yields(null, DEFAULT_EXIT_STAKE);
 
     const rate = 900;
     const exitHandlerContract = new ExitHandlerContract(web3, alice, exitHandler);
@@ -160,6 +164,7 @@ describe('Exit Manager', () => {
     sinon.stub(contract.balanceOf, 'call').yields(null, new BigNumber(100));
     sinon.stub(contract.allowance, 'call').yields(null, new BigNumber(30));
     sinon.stub(contract.getTokenAddr, 'call').yields(null, alice);
+    sinon.stub(contract.exitStake, 'call').yields(null, DEFAULT_EXIT_STAKE);
 
     const rate = 900;
     const exitHandlerContract = new ExitHandlerContract(web3, alice, exitHandler);
@@ -201,6 +206,7 @@ describe('Exit Manager', () => {
     sinon.stub(contract.balanceOf, 'call').yields(null, new BigNumber(100));
     sinon.stub(contract.allowance, 'call').yields(null, new BigNumber(100));
     sinon.stub(contract.getTokenAddr, 'call').yields(null, alice);
+    sinon.stub(contract.exitStake, 'call').yields(null, DEFAULT_EXIT_STAKE);
     sinon.stub(contract.startBoughtExit, 'sendTransaction').yields(null, '0x112233');
 
 
@@ -217,6 +223,7 @@ describe('Exit Manager', () => {
     if (contract.balanceOf.call.restore) contract.balanceOf.call.restore();
     if (contract.allowance.call.restore) contract.allowance.call.restore();
     if (contract.getTokenAddr.call.restore) contract.getTokenAddr.call.restore();
+    if (contract.exitStake.call.restore) contract.exitStake.call.restore();
     if (contract.startBoughtExit.sendTransaction.restore) contract.startBoughtExit.sendTransaction.restore();
   });
 });
