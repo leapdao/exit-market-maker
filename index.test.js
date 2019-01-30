@@ -44,6 +44,7 @@ describe('Exit Manager', () => {
     block.addTx(deposit).addTx(transfer);
     const prevPeriodRoot = '0x32C220482C68413FBF8290E3B1E49B0A85901CFCD62AB0738761568A2A6E8A57';
     const period = new Period(prevPeriodRoot, [block]);
+    period.setValidatorData(0, alice);
     const transferProof = period.proof(transfer);
 
     // sign exit receipt
@@ -52,7 +53,7 @@ describe('Exit Manager', () => {
     const signedData = Exit.signOverExit(utxoId, sellPrice, alicePriv);
     const signedDataBytes32 = Exit.bufferToBytes32Array(signedData);
 
-    const manager = new ExitManager(1, null);
+    const manager = new ExitManager(1000, null);
     try {
       await manager.sellExit([], transferProof, 0, 0, signedDataBytes32);
     } catch (err) {
@@ -73,6 +74,7 @@ describe('Exit Manager', () => {
     block.addTx(deposit).addTx(transfer);
     const prevPeriodRoot = '0x32C220482C68413FBF8290E3B1E49B0A85901CFCD62AB0738761568A2A6E8A57';
     const period = new Period(prevPeriodRoot, [block]);
+    period.setValidatorData(0, alice);
     const transferProof = period.proof(transfer);
 
     // sign exit receipt
@@ -85,7 +87,7 @@ describe('Exit Manager', () => {
     sinon.stub(contract.getTokenAddr, 'call').yields(null, alice);
 
     const exitHandlerContract = new ExitHandlerContract(web3, alice, exitHandler);
-    const rate = 0.9;
+    const rate = 900;
     // rate, exitContract, erc20Contract, senderAddr, exitHandlerAddr
     const manager = new ExitManager(rate, exitHandlerContract, null, alice, exitHandler);
     try {
@@ -107,6 +109,7 @@ describe('Exit Manager', () => {
     block.addTx(deposit).addTx(transfer);
     const prevPeriodRoot = '0x32C220482C68413FBF8290E3B1E49B0A85901CFCD62AB0738761568A2A6E8A57';
     const period = new Period(prevPeriodRoot, [block]);
+    period.setValidatorData(0, alice);
     const transferProof = period.proof(transfer);
 
     // sign exit receipt
@@ -120,7 +123,7 @@ describe('Exit Manager', () => {
     sinon.stub(contract.allowance, 'call').yields(null, new BigNumber(100));
     sinon.stub(contract.getTokenAddr, 'call').yields(null, alice);
 
-    const rate = 0.9;
+    const rate = 900;
     const exitHandlerContract = new ExitHandlerContract(web3, alice, exitHandler);
     const erc20 = new Erc20(web3);
     // rate, exitContract, erc20Contract, senderAddr, exitHandlerAddr
@@ -144,6 +147,7 @@ describe('Exit Manager', () => {
     block.addTx(deposit).addTx(transfer);
     const prevPeriodRoot = '0x32C220482C68413FBF8290E3B1E49B0A85901CFCD62AB0738761568A2A6E8A57';
     const period = new Period(prevPeriodRoot, [block]);
+    period.setValidatorData(0, alice);
     const transferProof = period.proof(transfer);
 
     // sign exit receipt
@@ -157,7 +161,7 @@ describe('Exit Manager', () => {
     sinon.stub(contract.allowance, 'call').yields(null, new BigNumber(30));
     sinon.stub(contract.getTokenAddr, 'call').yields(null, alice);
 
-    const rate = 0.9;
+    const rate = 900;
     const exitHandlerContract = new ExitHandlerContract(web3, alice, exitHandler);
     const erc20 = new Erc20(web3);
     // rate, exitContract, erc20Contract, senderAddr, exitHandlerAddr
@@ -181,6 +185,7 @@ describe('Exit Manager', () => {
     block.addTx(deposit).addTx(transfer);
     const prevPeriodRoot = '0x32C220482C68413FBF8290E3B1E49B0A85901CFCD62AB0738761568A2A6E8A57';
     const period = new Period(prevPeriodRoot, [block]);
+    period.setValidatorData(0, alice);
     const transferProof = period.proof(transfer);
     const depositProof = period.proof(deposit);
     const outputIndex = 0;
@@ -201,7 +206,7 @@ describe('Exit Manager', () => {
 
     const exitHandlerContract = new ExitHandlerContract(web3, alice, exitHandler);
     const erc20 = new Erc20(web3);
-    const rate = 0.9;
+    const rate = 900;
     // rate, exitContract, erc20Contract, senderAddr, exitHandlerAddr
     const manager = new ExitManager(rate, exitHandlerContract, erc20, alice, exitHandler);
     const rsp = await manager.sellExit(depositProof, transferProof, inputIndex, outputIndex, signedDataBytes32);

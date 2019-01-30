@@ -1,4 +1,5 @@
 import { Exit } from 'leap-core';
+import { BigInt, lessThan, divide, multiply } from 'jsbi-utils';
 import { BadRequest, ServerError } from './errors';
 
 const EMPTY_ADDR = '0x0000000000000000000000000000000000000000';
@@ -26,9 +27,9 @@ class ExitManager {
     const tx = Exit.txFromProof(transferProof);
 
     // check value
-    const sellValue = parseInt(signedData[1], 16);      // TODO: use bigNumber
+    const sellValue = BigInt(signedData[1]);
     const utxoValue = tx.outputs[outputIndex].value;
-    if (sellValue < this.rate * utxoValue) {        // TODO: use bigNumber
+    if (lessThan(sellValue, divide(multiply(BigInt(this.rate), BigInt(utxoValue)), BigInt(1000)))) {
       throw new BadRequest(`Price ${sellValue} too low for utxo size ${utxoValue}.`);
     }
 
