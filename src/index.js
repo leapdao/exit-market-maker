@@ -54,6 +54,7 @@ class ExitManager {
 
     // do tx
     const txHash = await this.exitHandler.startBoughtExit(
+      exitStake,
       inputProof,
       transferProof,
       outputIndex,
