@@ -1,9 +1,9 @@
 import Web3 from 'web3';
 import ethUtil from 'ethereumjs-util';
 import HDWalletProvider from 'truffle-hdwallet-provider';
-import ExitManager from './src/index';
-import Erc20 from './src/erc20Contract';
-import ExitHandler from './src/exitHandlerContract';
+import ExitManager from './src';
+import Erc20 from './src/contracts/erc20';
+import ExitHandler from './src/contracts/exitHandler';
 
 let provider;
 let web3;
@@ -19,12 +19,9 @@ exports.handler = function handler(event, context, callback) {
   const exitAddr = process.env.EXIT_ADDR;
   const rate = parseInt(process.env.RATE, 10);
 
-  if (!provider) {
-    provider = new HDWalletProvider(handlerPriv, providerUrl);
-  }
-  if (!web3) {
-    web3 = new Web3(provider);
-  }
+  provider = provider || new HDWalletProvider(handlerPriv, providerUrl);
+  web3 = web3 || new Web3(provider);
+
   const exitHandler = new ExitHandler(web3, handlerAddr, exitAddr);
   const erc20 = new Erc20(web3);
   const exitManager = new ExitManager(rate, exitHandler, erc20, handlerAddr, exitAddr);

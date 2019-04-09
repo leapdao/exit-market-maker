@@ -53,6 +53,7 @@
     "ethereumjs-util": "^6.0.0",
     "jsbi-utils": "^1.0.0",
     "leap-core": "^0.23.0",
+    "leap-lambda-boilerplate": "^1.1.0",
     "serverless-webpack": "^5.2.0",
     "truffle-hdwallet-provider": "^1.0.2",
     "web3": "0.20.7"

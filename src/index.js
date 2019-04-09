@@ -1,6 +1,8 @@
 import { Exit } from 'leap-core';
 import { BigInt, lessThan, divide, multiply } from 'jsbi-utils';
-import { BadRequest, ServerError } from './errors';
+import { Errors } from 'leap-lambda-boilerplate';
+
+const { BadRequest, ServerError } = Errors;
 
 const EMPTY_ADDR = '0x0000000000000000000000000000000000000000';
 
@@ -23,7 +25,8 @@ class ExitManager {
     transferProof,
     outputIndex,
     inputIndex,
-    signedData) {
+    signedData,
+  ) {
     const tx = Exit.txFromProof(transferProof);
 
     // check value

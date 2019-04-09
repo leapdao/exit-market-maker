@@ -2717,6 +2717,7 @@ js-yaml@^3.5.1:
 jsbi-utils@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/jsbi-utils/-/jsbi-utils-1.0.0.tgz#c0ce72ad42d2673a9bbc86d21cf5f3c1535af9bc"
+  integrity sha512-LuPoNHYtdmxsAxPNOxPjI4RPm+9aMNEje9rDpHoiAZDokLwfbMufP5GKdvGihiE93q2DAWs9KEmDAwMQLI8EWA==
   dependencies:
     jsbi "^2.0.5"
 
@@ -2828,6 +2829,11 @@ leap-core@^0.23.0:
     ethereumjs-util "^6.0.0"
     fast-equals "^1.5.0"
     jsbi-utils "^1.0.0"
+
+leap-lambda-boilerplate@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/leap-lambda-boilerplate/-/leap-lambda-boilerplate-1.1.0.tgz#442534c2747cbeaf832ba70940e8cb798e565ef6"
+  integrity sha512-l0IHWcXl/CrTpS+cSMcVw9NI6IFT/4GYHjtbuznUqCCI44X2oE18GtoemMWYyn6YckDiZHwmvMfrVlxjyu2xKA==
 
 levn@^0.3.0, levn@~0.3.0:
   version "0.3.0"
