@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import { it, describe, afterEach } from 'mocha';
 import BigNumber from 'bignumber.js';
 import { Tx, Input, Output, Outpoint, Block, Period, Exit } from 'leap-core';
-import ExitManager from './src/index';
+import ExitManager from './src/exitMarket/exitManager';
 import Erc20 from './src/erc20Contract';
 import ExitHandlerContract from './src/exitHandlerContract';
 
