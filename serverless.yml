@@ -23,16 +23,20 @@ provider:
        - ssm:GetParameters
        - ssm:GetParameter
       Resource: "arn:aws:ssm:*:*:parameter/exit-market/${opt:stage}/*"
-    - Effect: Allow
+     # Allow CRUD to usersTable with DynamoDb
+    - Effect: "Allow"
       Action:
-       - sdb:GetAttributes
-       - sdb:PutAttributes
-       - sdb:Select
-      Resource: 
-        Fn::Join:
-          - ""
-          - - "arn:aws:sdb:*:*:domain/"
-            - Ref: exitMarketDb
+       - dynamodb:Query
+       - dynamodb:Scan
+       - dynamodb:GetItem
+       - dynamodb:PutItem
+       - dynamodb:UpdateItem
+       - dynamodb:DeleteItem
+      Resource:
+        - Fn::GetAtt:
+          - exitMarketTable
+          - Arn
+        - "arn:aws:dynamodb:eu-west-1:*:table/${self:custom.table}/*"
     - Effect: Allow
       Action:
        - KMS:Decrypt
@@ -112,7 +116,7 @@ functions:
     handler: src/exitManager/index.handler
     name: exit-market-${opt:stage}-manager
     environment:
-      TABLE_NAME: exit-market-testnet-exitMarketDb-5ZKI7ZT1XL6F
+      TABLE_NAME: ${self:custom.table}
     events:
       - http:
           method: post
@@ -128,12 +132,17 @@ functions:
     handler: src/exitFinalizer/index.handler
     name: exit-market-${opt:stage}-finalizer
     environment:
-      TABLE_NAME: exit-market-testnet-exitMarketDb-5ZKI7ZT1XL6F
+      TABLE_NAME: ${self:custom.table}
       NODE_URL: ${env:NODE_URL}
       RATE: ${env:RATE}
       ENV: ${opt:stage}
     events:
-      - schedule: rate(1 minute)
+      #- schedule: rate(1 minute)
+      - http:
+          method: get
+          path: /
+          integration: lambda
+          cors: true
 
 plugins:
   - serverless-webpack
@@ -141,8 +150,57 @@ plugins:
 
 resources:
   Resources:
-    exitMarketDb:
-      Type: "AWS::SDB::Domain"
+    # Reference: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html
+    exitMarketTable:
+      Type: AWS::DynamoDB::Table
       Properties:
-        DomainName : ${self:custom.table}
-        Description: "SDB Domain to store data"
+        TableName: ${self:custom.table}
+        AttributeDefinitions:
+          - AttributeName: utxoId
+            AttributeType: S
+          - AttributeName: color
+            AttributeType: N          
+          - AttributeName: effectiveBlock
+            AttributeType: N          
+          - AttributeName: account
+            AttributeType: S
+          - AttributeName: finalized
+            AttributeType: N
+        KeySchema:
+          - AttributeName: utxoId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: "block-index"
+            KeySchema:
+              - AttributeName: "color"
+                KeyType: "HASH"
+              - AttributeName: "effectiveBlock"
+                KeyType: "RANGE"
+            Projection:
+              NonKeyAttributes:
+                - "utxoId"
+                - "finalized"
+                - "data"
+              ProjectionType: "INCLUDE"
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+          - IndexName: "account-index"
+            KeySchema:
+              - AttributeName: "account"
+                KeyType: "HASH"
+              - AttributeName: "finalized"
+                KeyType: "RANGE"
+            Projection:
+              NonKeyAttributes:
+                - "utxoId"
+                - "color"
+                - "effectiveBlock"
+                - "value"
+              ProjectionType: "INCLUDE"
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1

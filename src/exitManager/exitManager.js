@@ -5,6 +5,9 @@
  * found in the LICENSE file in the root directory of this source tree.
  */
 
+import { Tx } from 'leap-core';
+import { bufferToHex } from 'ethereumjs-util';
+
 class ExitManager {
 
   constructor(db) {
@@ -12,8 +15,15 @@ class ExitManager {
   }
 
   async registerExit({ body }) {
-    const key = `${body.unspent.outpoint.hash}:${body.unspent.outpoint.index}`;
-    await this.db.addSellRequest(key, body);
+    const inputTx = Tx.fromRaw(body.inputTx.raw);
+    const color = inputTx.outputs[0].color;
+    const value = inputTx.outputs[0].value.toString();
+    const account = inputTx.inputs[0].signer;
+
+    const tx = Tx.fromRaw(body.tx.raw);
+    const prevOut = tx.inputs[0].prevout;
+    const utxoId = `${bufferToHex(prevOut.hash)}:${prevOut.index}`;
+    await this.db.addSellRequest(utxoId, value, color, account, body);
     return {
       statusCode: 200,
     };

@@ -34,16 +34,16 @@ class ExitFinalizer {
     const latestPeriod = Math.floor(latestBlock / 32);
     console.log(`Latest block: ${latestBlock}. Latest period: ${latestPeriod}`);
 
-    const exits = await this.db.findProvableExits(latestBlock);
+    const exits = await this.db.findProvableExits(0, latestBlock);
     console.log('Sold exits to process:', exits.length);
 
     let done = 0;
     // TODO: do not wait for tx's to mine
     await Promise.all(exits.map(exit =>
-      this.sellExit(exit.Attributes).then((txHash) => {
-        console.log('Processed sold exit:', exit.Name, txHash);
+      this.sellExit(exit).then((txHash) => {
+        console.log('Processed sold exit:', exit.utxoId, txHash);
         done += 1;
-        return this.db.setAsFinalized(exit.Name);
+        return this.db.setAsFinalized(exit.utxoId);
       }),
     ));
 
@@ -61,9 +61,10 @@ class ExitFinalizer {
     const slotId = 0; // TODO: any slot
     const { signer } = await this.operator.slots(slotId);
 
-    const inputTx = JSON.parse(exit.inputTx);
-    const exitingTx = JSON.parse(exit.tx);
-    const signedData = JSON.parse(exit.signedData);
+    const { inputTx, signedData } = exit.data;
+    const exitingTx = exit.data.tx;
+
+    console.log(inputTx, signedData, exitingTx);
 
     // workaround for https://github.com/leapdao/leap-node/issues/236
     // TODO: remove and use this.plasma once the issue is fixed and deployed
