@@ -127,6 +127,20 @@ functions:
             passThrough: WHEN_NO_TEMPLATES
             template: *request_template
           response: *response_mappings
+      - http:
+          method: get
+          path: /exits/{account}/{color}
+          integration: lambda
+          cors: true
+          request:
+            parameters:
+              paths:
+                account: true
+                color: false
+            passThrough: WHEN_NO_TEMPLATES
+            template: *request_template
+          response: *response_mappings
+
   finalizer:
     timeout: 30
     handler: src/exitFinalizer/index.handler

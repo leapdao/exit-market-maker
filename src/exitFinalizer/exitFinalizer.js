@@ -34,7 +34,7 @@ class ExitFinalizer {
     const latestPeriod = Math.floor(latestBlock / 32);
     console.log(`Latest block: ${latestBlock}. Latest period: ${latestPeriod}`);
 
-    const exits = await this.db.findProvableExits(0, latestBlock);
+    const exits = await this.db.getProvableExits(0, latestBlock);
     console.log('Sold exits to process:', exits.length);
 
     let done = 0;

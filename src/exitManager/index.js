@@ -20,11 +20,13 @@ exports.handler = async (event) => {
 
   const router = new Router([
     ['POST', '/sellExit', exitManager.registerExit.bind(exitManager)],
+    ['GET', '/exits/:account', exitManager.getAccountExits.bind(exitManager)],
   ]);
 
   return router.dispatch(method, path, {
     body: event.body,
     querystring: event.params.querystring,
     headers: event.params.header,
+    path: event.params.path,
   });
 };

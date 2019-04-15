@@ -28,6 +28,10 @@ class ExitManager {
       statusCode: 200,
     };
   }
+
+  async getAccountExits({ path }) {
+    return this.db.getAccountExits(path.account, parseInt(path.color || 0, 10));
+  }
 }
 
 export default ExitManager;

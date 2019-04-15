@@ -19,9 +19,9 @@ export default class Db extends DynamoDb {
     const params = {
       TableName: this.tableName,
       Item: {
-        utxoId,
+        utxoId: utxoId.toLowerCase(),
         color,
-        account,
+        account: account.toLowerCase(),
         value,
         effectiveBlock: data.effectiveBlock,
         finalized: 0,
@@ -38,7 +38,7 @@ export default class Db extends DynamoDb {
   setAsFinalized(utxoId) {
     const params = {
       TableName: this.tableName,
-      Key: { utxoId },
+      Key: { utxoId: utxoId.toLowerCase() },
       UpdateExpression: 'set finalized = :f',
       ExpressionAttributeValues: {
         ':f': 1,
@@ -47,7 +47,22 @@ export default class Db extends DynamoDb {
     return this.update(params);
   }
 
-  findProvableExits(color, latestBlock) {
+  getAccountExits(account, color) {
+    const params = {
+      TableName: this.tableName,
+      IndexName: 'account-index',
+      KeyConditionExpression: 'account = :account and finalized = :f',
+      FilterExpression: 'color = :color',
+      ExpressionAttributeValues: {
+        ':account': account.toLowerCase(),
+        ':f': 1,
+        ':color': color,
+      },
+    };
+    return this.query(params);
+  }
+
+  getProvableExits(color, latestBlock) {
     const params = {
       TableName: this.tableName,
       IndexName: 'block-index',
