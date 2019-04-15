@@ -55,7 +55,7 @@ export default class Db extends DynamoDb {
       FilterExpression: 'color = :color',
       ExpressionAttributeValues: {
         ':account': account.toLowerCase(),
-        ':f': 1,
+        ':f': 0,
         ':color': color,
       },
     };
