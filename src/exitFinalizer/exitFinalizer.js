@@ -101,7 +101,7 @@ class ExitFinalizer {
     const allowance = await token.allowance(this.senderAddr, this.exitHandler.address);
 
     if (lessThan(bi(balance.toString()), sellValue)) {
-      throw new ServerError(`balance of ${balance.toNumber()} insufficient to handle exit size ${sellValue}.`);
+      throw new ServerError(`balance of ${balance.toString()} insufficient to handle exit size ${sellValue.toString()}.`);
     }
     if (lessThan(bi(allowance.toString()), sellValue)) {
       console.log('Insufficient allowance. Approving 2^256 for ExitHandler..');
