@@ -35,13 +35,14 @@ export default class Db extends DynamoDb {
     return this.add(params);
   }
 
-  setAsFinalized(utxoId) {
+  setAsFinalized(utxoId, txHash) {
     const params = {
       TableName: this.tableName,
       Key: { utxoId: utxoId.toLowerCase() },
-      UpdateExpression: 'set finalized = :f',
+      UpdateExpression: 'set finalized = :f, txHash = :hash',
       ExpressionAttributeValues: {
         ':f': 1,
+        ':hash': txHash,
       },
     };
     return this.update(params);

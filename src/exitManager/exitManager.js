@@ -22,7 +22,7 @@ class ExitManager {
   async registerExit({ body }) {
     const inputTx = Tx.fromRaw(body.inputTx.raw);
     const color = inputTx.outputs[0].color;
-    const value = inputTx.outputs[0].value.toString();
+    const value = body.tx.value.toString();
     const account = inputTx.inputs[0].signer;
 
     const tx = Tx.fromRaw(body.tx.raw);

@@ -35,14 +35,15 @@ class ExitFinalizer {
     console.log('Sold exits to process:', exits.length);
 
     let done = 0;
-    // TODO: do not wait for tx's to mine
-    await Promise.all(exits.map(exit =>
-      this.sellExit(exit).then((txHash) => {
-        console.log('Processed sold exit:', exit.utxoId, txHash);
+
+    for (let i = 0; i < exits.length; i += 1) {
+      const exit = exits[i];
+      await this.sellExit(exit).then((rsp) => {
+        console.log('Processed sold exit:', exit.utxoId, rsp);
         done += 1;
-        return this.db.setAsFinalized(exit.utxoId);
-      }),
-    ));
+        return this.db.setAsFinalized(exit.utxoId, rsp.hash);
+      });
+    }
 
     return {
       statusCode: 200,
