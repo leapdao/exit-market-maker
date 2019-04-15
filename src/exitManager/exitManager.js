@@ -8,10 +8,15 @@
 import { Tx } from 'leap-core';
 import { bufferToHex } from 'ethereumjs-util';
 
+import getToken from '../common/getToken';
+
 class ExitManager {
 
-  constructor(db) {
+  constructor(db, marketConfig, exitHandler, rootWallet) {
     this.db = db;
+    this.marketConfig = marketConfig;
+    this.exitHandler = exitHandler;
+    this.rootWallet = rootWallet;
   }
 
   async registerExit({ body }) {
@@ -31,6 +36,19 @@ class ExitManager {
 
   async getAccountExits({ path }) {
     return this.db.getAccountExits(path.account, parseInt(path.color || 0, 10));
+  }
+
+  async getDeals() {
+    return Promise.all(this.marketConfig.map(async (market) => {
+      const token = await getToken(market.color, this.exitHandler, this.rootWallet.provider);
+      const balance = await token.balanceOf(this.rootWallet.address);
+      return {
+        color: market.color,
+        tokenAddr: token.address,
+        balance: balance.toString(),
+        rate: market.rate,
+      };
+    }));
   }
 }
 

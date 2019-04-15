@@ -8,14 +8,11 @@
 import { Exit, helpers } from 'leap-core';
 import { lessThan, divide, multiply, bi } from 'jsbi-utils';
 import { Errors } from 'leap-lambda-boilerplate';
-import { erc20Abi } from 'leap-guardian/abis';
-import { ethers } from 'ethers';
+import getToken from '../common/getToken';
 
 const { getProof } = helpers;
 
 const { BadRequest, ServerError } = Errors;
-
-const EMPTY_ADDR = '0x0000000000000000000000000000000000000000';
 
 class ExitFinalizer {
 
@@ -64,8 +61,6 @@ class ExitFinalizer {
     const { inputTx, signedData } = exit.data;
     const exitingTx = exit.data.tx;
 
-    console.log(inputTx, signedData, exitingTx);
-
     // workaround for https://github.com/leapdao/leap-node/issues/236
     // TODO: remove and use this.plasma once the issue is fixed and deployed
     const blockProvider = {
@@ -87,22 +82,18 @@ class ExitFinalizer {
       throw new BadRequest(`Price ${sellValue} too low for utxo size ${utxoValue}.`);
     }
 
+    const exitStake = await this.exitHandler.exitStake();
     // check color
     const color = tx.outputs[outputIndex].color;
-    const tokenAddr = await this.exitHandler.getTokenAddr(color);
-    const exitStake = await this.exitHandler.exitStake();
-
-    if (color > 32768 || !tokenAddr || tokenAddr === EMPTY_ADDR || tokenAddr === '0x') {
-      throw new BadRequest(`bad color ${color}.`);
-    }
-
-    const token = new ethers.Contract(tokenAddr, erc20Abi, this.root);
+    const token = await getToken(color, this.exitHandler, this.root);
 
     const balance = await token.balanceOf(this.senderAddr);
     const allowance = await token.allowance(this.senderAddr, this.exitHandler.address);
 
     if (lessThan(bi(balance.toString()), sellValue)) {
-      throw new ServerError(`balance of ${balance.toString()} insufficient to handle exit size ${sellValue.toString()}.`);
+      throw new ServerError(
+        `balance of ${balance.toString()} insufficient to handle exit size ${sellValue.toString()}.`
+      );
     }
     if (lessThan(bi(allowance.toString()), sellValue)) {
       console.log('Insufficient allowance. Approving 2^256 for ExitHandler..');

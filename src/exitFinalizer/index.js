@@ -9,17 +9,13 @@ import { bufferToHex, privateToAddress, toBuffer } from 'ethereumjs-util';
 import { ethers } from 'ethers';
 import { Properties } from 'leap-lambda-boilerplate';
 
-import { getRootNetworkProvider } from 'leap-guardian/scripts/utils';
+import wallet from 'leap-guardian/scripts/utils/wallet';
 import { operatorAbi, exitHandlerAbi } from 'leap-guardian/abis';
 
 import ExitFinalizer from './exitFinalizer';
 import Db from '../db';
 
-let root;
-let plasma;
 let finalizer;
-let exitHandler;
-let operator;
 
 exports.handler = async () => {
   const nodeUrl = process.env.NODE_URL;
@@ -29,25 +25,18 @@ exports.handler = async () => {
   const handlerAddr = bufferToHex(privateToAddress(toBuffer(privKey)));
 
   if (!finalizer) {
-    plasma = new ethers.providers.JsonRpcProvider(nodeUrl);
-
-    const nodeConfig = await plasma.send('plasma_getConfig', []);
-    root = new ethers.Wallet(
-      privKey,
-      new ethers.providers.JsonRpcProvider(getRootNetworkProvider(nodeConfig)),
-    );
-
+    const { plasmaWallet, rootWallet, nodeConfig } = await wallet({ nodeUrl, privKey });
     const { exitHandlerAddr, operatorAddr } = nodeConfig;
-    exitHandler = new ethers.Contract(exitHandlerAddr, exitHandlerAbi, root);
-    operator = new ethers.Contract(operatorAddr, operatorAbi, root);
+    const exitHandler = new ethers.Contract(exitHandlerAddr, exitHandlerAbi, rootWallet);
+    const operator = new ethers.Contract(operatorAddr, operatorAbi, rootWallet);
 
     finalizer = new ExitFinalizer(
       rate,
       handlerAddr,
       exitHandler,
       operator,
-      root,
-      plasma,
+      rootWallet,
+      plasmaWallet.provider,
       new Db(tableName),
     );
   }

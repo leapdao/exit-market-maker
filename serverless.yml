@@ -112,11 +112,14 @@ requestTemplate: &request_template
 
 functions:
   manager:
-    timeout: 3
+    timeout: 10
     handler: src/exitManager/index.handler
     name: exit-market-${opt:stage}-manager
     environment:
       TABLE_NAME: ${self:custom.table}
+      NODE_URL: ${env:NODE_URL}
+      MARKET_CONFIG: ${env:MARKET_CONFIG}
+      ENV: ${opt:stage}
     events:
       - http:
           method: post
@@ -140,6 +143,15 @@ functions:
             passThrough: WHEN_NO_TEMPLATES
             template: *request_template
           response: *response_mappings
+      - http:
+          method: get
+          path: /deals
+          integration: lambda
+          cors: true
+          request:
+            passThrough: WHEN_NO_TEMPLATES
+            template: *request_template
+          response: *response_mappings
 
   finalizer:
     timeout: 30
@@ -148,15 +160,10 @@ functions:
     environment:
       TABLE_NAME: ${self:custom.table}
       NODE_URL: ${env:NODE_URL}
-      RATE: ${env:RATE}
+      MARKET_CONFIG: ${env:MARKET_CONFIG}
       ENV: ${opt:stage}
     events:
-      #- schedule: rate(1 minute)
-      - http:
-          method: get
-          path: /
-          integration: lambda
-          cors: true
+      - schedule: rate(1 minute)
 
 plugins:
   - serverless-webpack

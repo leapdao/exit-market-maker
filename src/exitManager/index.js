@@ -5,22 +5,43 @@
  * found in the LICENSE file in the root directory of this source tree.
  */
 
-import { Router } from 'leap-lambda-boilerplate';
+import { ethers } from 'ethers';
+import { Router, Properties } from 'leap-lambda-boilerplate';
+import wallet from 'leap-guardian/scripts/utils/wallet';
+import { exitHandlerAbi } from 'leap-guardian/abis';
 
 import ExitManager from './exitManager';
 import Db from '../db';
+
+let exitManager;
 
 exports.handler = async (event) => {
   const path = event.context['resource-path'];
   const method = event.context['http-method'];
 
   const tableName = process.env.TABLE_NAME;
+  const nodeUrl = process.env.NODE_URL;
+  const privKey = await Properties.readEncrypted(`/exit-market/${process.env.ENV}/PRIV_KEY`);
 
-  const exitManager = new ExitManager(new Db(tableName));
+  const marketConfig = JSON.parse(process.env.MARKET_CONFIG);
+
+  if (!exitManager) {
+    const { rootWallet, nodeConfig } = await wallet({ nodeUrl, privKey });
+    const { exitHandlerAddr } = nodeConfig;
+    const exitHandler = new ethers.Contract(exitHandlerAddr, exitHandlerAbi, rootWallet);
+
+    exitManager = new ExitManager(
+      new Db(tableName),
+      marketConfig,
+      exitHandler,
+      rootWallet,
+    );
+  }
 
   const router = new Router([
     ['POST', '/sellExit', exitManager.registerExit.bind(exitManager)],
     ['GET', '/exits/:account', exitManager.getAccountExits.bind(exitManager)],
+    ['GET', '/deals', exitManager.getDeals.bind(exitManager)],
   ]);
 
   return router.dispatch(method, path, {
