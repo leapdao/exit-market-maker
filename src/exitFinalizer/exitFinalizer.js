@@ -42,7 +42,7 @@ class ExitFinalizer {
         console.log('Processed sold exit:', exit.utxoId, rsp);
         done += 1;
         return this.db.setAsFinalized(exit.utxoId, rsp.hash);
-      });
+      }).catch(e => console.error(e));
     }
 
     return {
