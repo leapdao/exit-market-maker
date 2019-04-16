@@ -3195,10 +3195,10 @@ leap-core@^0.28.1, leap-core@^0.28.4:
     ethereumjs-util "6.0.0"
     jsbi-utils "^1.0.0"
 
-leap-guardian@^1.0.2:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/leap-guardian/-/leap-guardian-1.1.0.tgz#8cb4d0d64be283ce5af4cf5fbd9415f512d07f46"
-  integrity sha512-gPpw9rCYv/frU1y7AUn38WS/ZSSXolgpvmdzN9N15cpUUjzM25y/jn3WOLwbO6DCsPt+zVr6b/yvUUCgRHsnbw==
+leap-guardian@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/leap-guardian/-/leap-guardian-1.2.0.tgz#0be21bdfac276878e977eb34d13532ba387c4f90"
+  integrity sha512-u1Hs+0j62jLdnglMndBHPPWwf1+yqsUHg0uaVdwrD1Z6H1dFtUmUV9+M4IGW/B31sjur1/U8qleQm2l/2yNLoQ==
   dependencies:
     ethereumjs-util "^6.1.0"
     ethers "^4.0.27"

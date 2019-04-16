@@ -39,7 +39,7 @@
     "ethers": "^4.0.27",
     "jsbi-utils": "^1.0.1",
     "leap-core": "^0.28.4",
-    "leap-guardian": "^1.0.2",
+    "leap-guardian": "^1.2.0",
     "leap-lambda-boilerplate": "^1.3.0"
   }
 }
