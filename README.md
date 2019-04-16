@@ -1,10 +1,21 @@
-# Fast Exit Market Maker - Operated by LeapDAO
+# Fast Exit Market Maker
 
 ## Testnet
 
-Endpoint: `https://ycxraahrrb.execute-api.eu-west-1.amazonaws.com/testnet/sellExit`
+endpoints:
+```
+  POST - https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet/sellExit
+  GET - https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet/exits/{account}/{color}
+  GET - https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet/deals
+```
 
 ## Development
+
+Run offline (AWS profile required):
+
+```
+yarn start
+```
 
 ## Deploy
 

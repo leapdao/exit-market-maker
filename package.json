@@ -8,7 +8,7 @@
     "lint": "npm run lint:js",
     "lint:eslint": "eslint --fix --ignore-path .gitignore --ignore-pattern internals/scripts",
     "lint:js": "npm run lint:eslint -- . ",
-    "offline": "serverless offline start",
+    "start": "MARKET_CONFIG='[ { \"color\": 0, \"rate\": 980 } ]' NODE_URL=https://testnet-node.leapdao.org KMS_KEY_ID=93107264-1adb-4a21-a3a5-3e02646f5f88 sls offline -s testnet",
     "deploy:testnet": "MARKET_CONFIG='[ { \"color\": 0, \"rate\": 980 } ]' NODE_URL=https://testnet-node.leapdao.org KMS_KEY_ID=93107264-1adb-4a21-a3a5-3e02646f5f88 sls deploy -s testnet"
   },
   "devDependencies": {
