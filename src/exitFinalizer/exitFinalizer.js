@@ -101,8 +101,8 @@ class ExitFinalizer {
       );
     }
     if (lessThan(bi(allowance.toString()), sellValue)) {
-      console.log('Insufficient allowance. Approving 2^256 for ExitHandler..');
-      await token.approve(this.exitHandler.address, bi(2 ** 256).toString());
+      console.log('Insufficient allowance. Approving 2^255 for ExitHandler..');
+      await token.approve(this.exitHandler.address, bi(2 ** 255).toString());
     }
 
     // do tx
