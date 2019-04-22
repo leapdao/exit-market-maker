@@ -5,6 +5,8 @@
  * found in the LICENSE file in the root directory of this source tree.
  */
 
+/* eslint-disable no-console */
+
 import { Exit, helpers } from 'leap-core';
 import { lessThan, divide, multiply, bi } from 'jsbi-utils';
 import { Errors } from 'leap-lambda-boilerplate';
@@ -16,7 +18,7 @@ const { BadRequest, ServerError } = Errors;
 
 class ExitFinalizer {
 
-  constructor(rate, senderAddr, exitHandler, operator, root, plasma, db) {
+  constructor(rate, senderAddr, exitHandler, operator, root, plasma, db, marketConfig) {
     this.rate = rate;
     this.senderAddr = senderAddr;
     this.exitHandler = exitHandler;
@@ -24,6 +26,7 @@ class ExitFinalizer {
     this.db = db;
     this.root = root;
     this.plasma = plasma;
+    this.marketConfig = marketConfig;
   }
 
   async sellExits() {
@@ -31,26 +34,27 @@ class ExitFinalizer {
     const latestPeriod = Math.floor(latestBlock / 32);
     console.log(`Latest block: ${latestBlock}. Latest period: ${latestPeriod}`);
 
-    const exits = await this.db.getProvableExits(0, latestBlock);
-    console.log('Sold exits to process:', exits.length);
+    const result = {};
 
-    let done = 0;
+    await Promise.all(this.marketConfig.map(async (market) => {
+      const exits = await this.db.getProvableExits(market.color, latestBlock);
+      console.log('Sold exits to process:', exits.length);
 
-    for (let i = 0; i < exits.length; i += 1) {
-      const exit = exits[i];
-      await this.sellExit(exit).then((rsp) => {
-        console.log('Processed sold exit:', exit.utxoId, rsp);
-        done += 1;
-        return this.db.setAsFinalized(exit.utxoId, rsp.hash);
-      }).catch(e => console.error(e));
-    }
+      result[market.color] = { total: exits.length, done: 0 };
+
+      for (let i = 0; i < exits.length; i += 1) {
+        const exit = exits[i];
+        await this.sellExit(exit).then((rsp) => { // eslint-disable-line no-await-in-loop
+          console.log('Processed sold exit:', exit.utxoId, rsp);
+          result[market.color].done += 1;
+          return this.db.setAsFinalized(exit.utxoId, rsp.hash);
+        }).catch(e => console.error(e));
+      }
+    }));
 
     return {
       statusCode: 200,
-      body: {
-        exits: exits.length,
-        done,
-      },
+      body: result,
     };
   }
 

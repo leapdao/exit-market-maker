@@ -24,6 +24,8 @@ exports.handler = async () => {
   const privKey = await Properties.readEncrypted(`/exit-market/${process.env.ENV}/PRIV_KEY`);
   const handlerAddr = bufferToHex(privateToAddress(toBuffer(privKey)));
 
+  const marketConfig = JSON.parse(process.env.MARKET_CONFIG);
+
   if (!finalizer) {
     const { plasmaWallet, rootWallet, nodeConfig } = await wallet({ nodeUrl, privKey });
     const { exitHandlerAddr, operatorAddr } = nodeConfig;
@@ -38,6 +40,7 @@ exports.handler = async () => {
       rootWallet,
       plasmaWallet.provider,
       new Db(tableName),
+      marketConfig,
     );
   }
 
