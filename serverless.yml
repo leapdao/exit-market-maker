@@ -152,6 +152,15 @@ functions:
             passThrough: WHEN_NO_TEMPLATES
             template: *request_template
           response: *response_mappings
+      - http:
+          method: post
+          path: /directSell
+          integration: lambda
+          cors: true
+          request:
+            passThrough: WHEN_NO_TEMPLATES
+            template: *request_template
+          response: *response_mappings
 
   finalizer:
     timeout: 30

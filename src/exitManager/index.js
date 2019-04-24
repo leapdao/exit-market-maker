@@ -26,7 +26,7 @@ exports.handler = async (event) => {
   const marketConfig = JSON.parse(process.env.MARKET_CONFIG);
 
   if (!exitManager) {
-    const { rootWallet, nodeConfig } = await wallet({ nodeUrl, privKey });
+    const { rootWallet, plasmaWallet, nodeConfig } = await wallet({ nodeUrl, privKey });
     const { exitHandlerAddr } = nodeConfig;
     const exitHandler = new ethers.Contract(exitHandlerAddr, exitHandlerAbi, rootWallet);
 
@@ -35,6 +35,7 @@ exports.handler = async (event) => {
       marketConfig,
       exitHandler,
       rootWallet,
+      plasmaWallet,
     );
   }
 
@@ -42,6 +43,7 @@ exports.handler = async (event) => {
     ['POST', '/sellExit', exitManager.registerExit.bind(exitManager)],
     ['GET', '/exits/:account', exitManager.getAccountExits.bind(exitManager)],
     ['GET', '/deals', exitManager.getDeals.bind(exitManager)],
+    ['POST', '/directSell', exitManager.directSell.bind(exitManager)],
   ]);
 
   return router.dispatch(method, path, {

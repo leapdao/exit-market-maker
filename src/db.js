@@ -78,4 +78,29 @@ export default class Db extends DynamoDb {
     return this.query(params);
   }
 
+  addDirectSellRequest(txHash, value, color, account, payoutTxHash) {
+    const params = {
+      TableName: this.tableName,
+      Item: {
+        utxoId: txHash.toLowerCase(),
+        color,
+        account: account.toLowerCase(),
+        value,
+        finalized: 1,
+        txHash: payoutTxHash,
+      },
+    };
+    return this.add(params);
+  }
+
+  getDirectSellRequest(txHash) {
+    const params = {
+      TableName: this.tableName,
+      Key: {
+        utxoId: txHash.toLowerCase(),
+      },
+    };
+    return this.get(params);
+  }
+
 }
