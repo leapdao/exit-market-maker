@@ -10,7 +10,7 @@
     "lint:js": "npm run lint:eslint -- . ",
     "start": "MARKET_CONFIG='[ { \"color\": 0, \"rate\": 980 }, { \"color\": 1, \"rate\": 1000 } ]' NODE_URL=https://testnet-node.leapdao.org KMS_KEY_ID=93107264-1adb-4a21-a3a5-3e02646f5f88 sls offline -s testnet",
     "deploy:testnet": "MARKET_CONFIG='[ { \"color\": 0, \"rate\": 980 }, { \"color\": 1, \"rate\": 1000 } ]' NODE_URL=https://testnet-node.leapdao.org KMS_KEY_ID=93107264-1adb-4a21-a3a5-3e02646f5f88 sls deploy -s testnet",
-    "deploy:mainnet": "MARKET_CONFIG='[ { \"color\": 0, \"rate\": 980 }, { \"color\": 2, \"rate\": 1000 } ]' NODE_URL=https://mainnet-node.leapdao.org KMS_KEY_ID=041908e5-0287-431e-b498-7b9d94c38fd8 sls deploy -s mainnet"
+    "deploy:mainnet": "MARKET_CONFIG='[ { \"color\": 0, \"rate\": 980 }, { \"color\": 2, \"rate\": 1000 } ]' NODE_URL=https://mainnet-node1.leapdao.org KMS_KEY_ID=041908e5-0287-431e-b498-7b9d94c38fd8 sls deploy -s mainnet"
   },
   "devDependencies": {
     "@sucrase/webpack-loader": "^2.0.0",
