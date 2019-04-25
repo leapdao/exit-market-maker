@@ -8,6 +8,7 @@
 import { Tx } from 'leap-core';
 import { bufferToHex } from 'ethereumjs-util';
 import { bi, lessThan } from 'jsbi-utils';
+import fetch from 'node-fetch';
 
 import getToken from '../common/getToken';
 
@@ -93,7 +94,19 @@ class ExitManager {
 
     const account = tx.inputs[0].signer;
 
-    const payoutTx = await token.transfer(account, value.toString());
+    let gasPrice;
+
+    try {
+      const rsp = await fetch('https://ethgasstation.info/json/ethgasAPI.json').then(resp => resp.json());
+      if (rsp && rsp.fast > 0 && rsp.fast < 200) {
+        gasPrice = rsp.fast * (10 ** 8);
+      }
+    } catch (e) {
+      // ignore and stick to default gasPrice from web3
+      console.error('gas station', e);
+    }
+
+    const payoutTx = await token.transfer(account, value.toString(), { gasPrice });
     console.log('Direct sell payout:', payoutTx);
     await this.db.addDirectSellRequest(txHash, value, color, account, payoutTx.hash);
     return payoutTx.hash;
