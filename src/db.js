@@ -90,6 +90,7 @@ export default class Db extends DynamoDb {
         txHash: payoutTxHash,
       },
     };
+    console.log(params);
     return this.add(params);
   }
 
