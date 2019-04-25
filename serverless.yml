@@ -172,7 +172,7 @@ functions:
       MARKET_CONFIG: ${env:MARKET_CONFIG}
       ENV: ${opt:stage}
     events:
-      - schedule: rate(1 minute)
+      - schedule: rate(3 minutes)
 
 plugins:
   - serverless-webpack
