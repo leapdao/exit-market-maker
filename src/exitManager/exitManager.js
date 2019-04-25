@@ -72,8 +72,8 @@ class ExitManager {
     const tx = Tx.fromRaw(raw);
     console.log(tx);
 
-    const ourOutput = tx.outputs.find(out => 
-      out.address.toLowerCase() === this.rootWallet.address.toLowerCase()
+    const ourOutput = tx.outputs.find(out =>
+      out.address.toLowerCase() === this.rootWallet.address.toLowerCase(),
     );
     if (!ourOutput) {
       throw new Error('Wrong tx: not sending to market maker');

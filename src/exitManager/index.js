@@ -13,8 +13,6 @@ import { exitHandlerAbi } from 'leap-guardian/abis';
 import ExitManager from './exitManager';
 import Db from '../db';
 
-let exitManager;
-
 exports.handler = async (event) => {
   const path = event.context['resource-path'];
   const method = event.context['http-method'];
@@ -22,22 +20,19 @@ exports.handler = async (event) => {
   const tableName = process.env.TABLE_NAME;
   const nodeUrl = process.env.NODE_URL;
   const privKey = await Properties.readEncrypted(`/exit-market/${process.env.ENV}/PRIV_KEY`);
-
   const marketConfig = JSON.parse(process.env.MARKET_CONFIG);
 
-  if (!exitManager) {
-    const { rootWallet, plasmaWallet, nodeConfig } = await wallet({ nodeUrl, privKey });
-    const { exitHandlerAddr } = nodeConfig;
-    const exitHandler = new ethers.Contract(exitHandlerAddr, exitHandlerAbi, rootWallet);
+  const { rootWallet, plasmaWallet, nodeConfig } = await wallet({ nodeUrl, privKey });
+  const { exitHandlerAddr } = nodeConfig;
+  const exitHandler = new ethers.Contract(exitHandlerAddr, exitHandlerAbi, rootWallet);
 
-    exitManager = new ExitManager(
-      new Db(tableName),
-      marketConfig,
-      exitHandler,
-      rootWallet,
-      plasmaWallet,
-    );
-  }
+  const exitManager = new ExitManager(
+    new Db(tableName),
+    marketConfig,
+    exitHandler,
+    rootWallet,
+    plasmaWallet,
+  );
 
   const router = new Router([
     ['POST', '/sellExit', exitManager.registerExit.bind(exitManager)],
