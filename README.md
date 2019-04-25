@@ -1,12 +1,144 @@
-## Fast Exit Market Maker
+# Fast Exit Market Maker
 
-testnet deployment: `https://cok43k06u1.execute-api.eu-west-1.amazonaws.com/v0`
+## Endpoints
 
-testnet exit handler Contract: `0x47655867062f05d689ad33cd7de62d66ec172419`
+### /sellExit
 
-testnet token in sale: `0xD2D0F8a6ADfF16C2098101087f9548465EC96C98` at rate of 0.9
+Registers a new fast sell exit.
 
-example query:
+First, you have to transfer your UTXO to exitHander address on plasma. Then you you call `/sellExit` to notify market maker.
+
+Usage: [Exit.fastSellUtxo and Exit.fastSellAmount helpers](https://github.com/leapdao/leap-core/blob/master/lib/exit.js#L81)
+
+Example payload:
 ```
-curl -X POST -s -w "%{http_code}\n" -H 'Content-Type: application/json' -d '{"inputProof": [ '0x4aa9b4b4865c3be688596e7dce7fe90da43126c702030bc3f32d838d7318158e', '0x4607009a00000000000000140000000000000000000000000000000000000000', '0x00000000000003116909fc793c3afda9c5ce749902115273ceef9a80a8cded3d', '0x9221aa6e5d2b87fe0023903ecfbac0635ae8823e40ae6d2fe696b6813ad4911b', '0x9e94649e6716557dee378c5586af598907c6730ab0c0af102f908fffbca4c078', '0x02e082c76cf528c78e1b00000000000000000000000000000000000000000000', '0x0001c9f78d2893e40000000083b3525e17f9eaa92dae3f9924cc333c94c7e98a', '0x0000000000000000000000000000000000000000000000000000000000000000', '0x0000000000000000000000000000000000000000000000000000000000000000', '0x9f7b39864833cad4e2a4a65139e5a17b6b0341e2a3f89e1c48216730edf91fa1', '0xca112e33afcdf858b66f4103d33203f46e31408a46ddbce71ac9d0ae80dae5cd', '0x18bc9030ae2b9584a8ea298de2ff560f75e991f8d004204c387a7326b2412ad7', '0x315be4faecc52c10016ecd9fe9095d868ac4139fe7ef4eddd7bb55367ff15739' ], "transferProof": [ '0x4aa9b4b4865c3be688596e7dce7fe90da43126c702030bc3f32d838d7318158e', '0x300800d00000000000000018000000000312aa5b08de7a9454faa07856597f36', '0x6a73d1bbe19ae43f17a81a15f52b6b500a8400b4edcff140e47a859ee8434eee', '0xd76441a92e9371c6b76e2adb2b56fe86a57fcc190198311c3b4a8c112dc5fb70', '0x6ec42b20ed7bed6bac0b6364aecfd36d5a93361b000000000000000000000000', '0x0000000000000000000000008ac7230489e80000000054177ded16b8fe8f9017', '0xd6c44704f6998a914e5400000000000000000000000000000000000000000000', '0x00013f306a2409fc0000000083b3525e17f9eaa92dae3f9924cc333c94c7e98a', '0x0000000000000000000000000000000000000000000000000000000000000000', '0x0000000000000000000000000000000000000000000000000000000000000000', '0xf594e47d692eeb3844e507734d2cf40b942195de76bc8f3aad57c550f337e4af', '0xd09c9cd0ade47bc24745cb0d8d8c0df00c17003d6db30a22bda86799733dfd80', '0x18bc9030ae2b9584a8ea298de2ff560f75e991f8d004204c387a7326b2412ad7', '0x315be4faecc52c10016ecd9fe9095d868ac4139fe7ef4eddd7bb55367ff15739' ], "outputIndex": 0, "inputIndex": 0, "signedData": ['0x00000000000000000000000000000000009a53fba464ea4e1d3d4a7fabf5b25a', '0x0000000000000000000000000000000000000000000000008ac7230489e80000', '0x724a915adb5c84b4b22a93c45c14d709ab9d16a3d4572e98d00980c46668d843', '0x789ea187c5f8fa33ac4ca938e3f44de92bff4f76b660064a2b96b8ff250f779d', '0x000000000000000000000000000000000000000000000000000000000000001b']}' https://cok43k06u1.execute-api.eu-west-1.amazonaws.com/v0/sellExit
+{
+    "tx": {
+        "value": "0xf43fc2c04ee0000",
+        "color": 0,
+        "hash": "0x76e9032dda4fc2ba6e850754770652783555de7add8b535ae7777a7a7c590f2a",
+        "from": "0xaf0939af286a35dbfab7ded7c777a5f6e8be26a8",
+        "raw": "0x0311b9a0ff624f789a75bbaf72a524b9e49e0ad86f90ecbdce7022c5e3d70273aa6f00fc6abf47a13842d50525030824b1089c57c94e8847cac1d3e4be0deaedf7f69b6e07b7b8a4f1a67111c26c06fff814ef57d8aa82402b20cbac8e6742e6e98ce51b0000000000000000000000000000000000000000000000000f43fc2c04ee000000002c2a3b359edbcfe3c3ac0cd9f9f1349a96c02530",
+        "blockHash": "0x0934854f4fd9fed3ea93ccf64e40ef6251fa3b6a90f4aca10f3e8661bb59ecd8",
+        "blockNumber": 15275,
+        "transactionIndex": 0,
+        "to": "0x2c2a3b359edbcfe3c3ac0cd9f9f1349a96c02530",
+        "gas": "0x0",
+        "gasPrice": "0x0",
+        "nonce": 0,
+        "input": "0x"
+    },
+    "effectiveBlock": 15295,
+    "inputTx": {
+        "value": "1100000000000000000",
+        "color": 0,
+        "hash": "0xb9a0ff624f789a75bbaf72a524b9e49e0ad86f90ecbdce7022c5e3d70273aa6f",
+        "from": "0xaf0939af286A35DBfab7DEd7c777A5F6E8BE26A8",
+        "raw": "0x03124deb9da953e92bea4021a11fdfbb0ca461765eef83f53739927b6625890f095b013193352ecf53c9d2fcda1318ff5662e1447dc7ae8e939502929e0575a30890a04df251c7e4668d710918b866b809be1dbe0c6d205d9283a6a8393d5e59a8952d1c0000000000000000000000000000000000000000000000000f43fc2c04ee00000000af0939af286a35dbfab7ded7c777a5f6e8be26a8000000000000000000000000000000000000000000000030c73c1f9ad0f640000000af0939af286a35dbfab7ded7c777a5f6e8be26a8",
+        "blockHash": "0x0ea374b424a98d92e5fb0cee4da72e5545afaecb22700bdbb74b30e15cf29779",
+        "blockNumber": 15274,
+        "transactionIndex": 0,
+        "to": "0xaf0939af286A35DBfab7DEd7c777A5F6E8BE26A8",
+        "gas": 0,
+        "gasPrice": "0",
+        "nonce": 0,
+        "input": "0x"
+    },
+    "signedData": [
+        "0x000000000000000000000000000000000055de7add8b535ae7777a7a7c590f2a",
+        "0x0000000000000000000000000000000000000000000000000f43fc2c04ee0000",
+        "0x2244868e84c68666224794b55946e971fd6866aa0651c2677907a594258cd08d",
+        "0x3a6f670eeb3fa225465a0bf522f0e9e88402597355c6e1421f0df975ca20c3ee",
+        "0x000000000000000000000000000000000000000000000000000000000000001b"
+    ]
+}
 ```
+
+### GET /exits/{account}/{color}
+
+Returns pending exits for given account for a given color. Pending = registered with market maker, but not yet finalized (waiting for a next period to be mined).
+
+### GET /deals
+
+Returns configuration for the market maker: supported markets, balances and MM adress.
+
+Example response:
+
+```
+{
+    "address": "0x83B3525e17F9eAA92dAE3f9924cc333c94C7E98a",
+    "deals": [
+        {
+            "color": 0,
+            "tokenAddr": "0xD2D0F8a6ADfF16C2098101087f9548465EC96C98",
+            "balance": "18352119999999999872",
+            "rate": 980
+        }
+    ]
+}
+```
+
+### POST - /directSell
+
+Request market maker to payout tokens skipping ExitHandler contract. For that you have to supply a txHash of plasma transaction spending from your account ot market maker account. The value of that transaction will be payed out to you on a root network.
+
+Returns: txHash of payout transaction.
+
+Usage example: [burner](https://github.com/leapdao/burner-wallet/pull/65/files#diff-b00b060794e8d5797bffd335bd17e2a1R252)
+
+## Testnet endpoints
+
+```
+  POST - https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet/sellExit
+  GET - https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet/exits/{account}/{color}
+  GET - https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet/deals
+  POST - https://2nuxsb25he.execute-api.eu-west-1.amazonaws.com/testnet/directSell
+```
+
+## Mainnet endpoints
+
+```
+  POST - https://k238oyefqc.execute-api.eu-west-1.amazonaws.com/mainnet/sellExit
+  GET - https://k238oyefqc.execute-api.eu-west-1.amazonaws.com/mainnet/exits/{account}/{color}
+  GET - https://k238oyefqc.execute-api.eu-west-1.amazonaws.com/mainnet/deals
+  POST - https://k238oyefqc.execute-api.eu-west-1.amazonaws.com/mainnet/directSell
+```
+
+## Development
+
+Run offline (AWS profile required):
+
+```
+yarn start
+```
+
+## Deploy
+
+Testnet:
+```
+yarn deploy:testnet
+```
+
+Mainnet:
+```
+yarn deploy:mainnet
+```
+
+## Operations
+
+### Initial setup
+
+Fund market maker address (derived from PRIV_KEY) with Ether and tokens you want to create markets for. Note, that market maker will submit exits to FastExitHandler and thus needs enough ether not only for tx fees, but for exit stake as well.
+
+### Adding new markets / changing market settings
+
+Change MARKET_CONFIG env var (see package.json for examples)
+
+### Troubleshooting
+
+*Logs*
+mainnet exit finalizer: `sls logs -f finalizer -s mainnet` (fastExits)
+mainnet exit manager: `sls logs -f manager -s mainnet` (registering fastExits, processing directSell of sunDai)
+
+*Receipts*
+Hashes for outbound transactions are stored in DynamoDb as well (see `txHash` attribute). For `directSell` (sunDai) it will be a hash of payout tx, for `fastSell` it will be a hash of `startBoughtExit` tx.

@@ -1,0 +1,237 @@
+service: exit-market
+
+custom:
+  serverless-offline:
+    port: 3001
+  table: exit-market-${opt:stage}
+  region: eu-west-1
+  kmsKeyArn: arn:aws:kms:eu-west-1:929106972464:key/${env:KMS_KEY_ID, ''}
+
+package:
+  exclude:
+    - src/**/*.test.js
+    - '*.test.js'
+
+provider:
+  name: aws
+  region: eu-west-1
+  runtime: nodejs8.10
+  timeout: 30
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+       - ssm:GetParameters
+       - ssm:GetParameter
+      Resource: "arn:aws:ssm:*:*:parameter/exit-market/${opt:stage}/*"
+     # Allow CRUD to usersTable with DynamoDb
+    - Effect: "Allow"
+      Action:
+       - dynamodb:Query
+       - dynamodb:Scan
+       - dynamodb:GetItem
+       - dynamodb:PutItem
+       - dynamodb:UpdateItem
+       - dynamodb:DeleteItem
+      Resource:
+        - Fn::GetAtt:
+          - exitMarketTable
+          - Arn
+        - "arn:aws:dynamodb:eu-west-1:*:table/${self:custom.table}/*"
+    - Effect: Allow
+      Action:
+       - KMS:Decrypt
+      Resource: ${self:custom.kmsKeyArn}
+
+responseMappings: &response_mappings
+  headers:
+    Content-Type: "'application/json'"
+  statusCodes:
+      200:
+          pattern: ''
+          headers:
+            Access-Control-Allow-Origin: "'*'"
+          template:
+            application/json: ""
+      400:
+          pattern: 'Bad Request: .*'
+          headers:
+            Access-Control-Allow-Origin: "'*'"
+          template:
+            application/json: ""
+      401:
+          pattern: 'Unauthorized: .*'
+          headers:
+            Access-Control-Allow-Origin: "'*'"
+          template:
+            application/json: ""
+      403:
+          pattern: 'Forbidden: .*'
+          headers:
+            Access-Control-Allow-Origin: "'*'"
+          template:
+            application/json: ""
+      404:
+          pattern: 'Not Found: .*'
+          headers:
+            Access-Control-Allow-Origin: "'*'"
+          template:
+            application/json: ""
+      500:
+          pattern: 'Error: .*'
+          headers:
+            Access-Control-Allow-Origin: "'*'"
+
+# Generic request mapping template. Should work for all the requests
+# Reference:
+# https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+# https://serverless.com/framework/docs/providers/aws/events/apigateway#custom-request-templates
+requestTemplate: &request_template
+  application/json: '
+  #set($allParams = $input.params())
+  {
+  "body": $input.json(''$''),
+  "params" : {
+  #foreach($type in $allParams.keySet())
+      #set($params = $allParams.get($type))
+  "$type" : {
+      #foreach($paramName in $params.keySet())
+      "$paramName" : "$util.escapeJavaScript($params.get($paramName))"
+          #if($foreach.hasNext),#end
+      #end
+  }
+      #if($foreach.hasNext),#end
+  #end
+  },
+  "context" : {
+    "http-method" : "$context.httpMethod",
+    "source-ip" : "$context.identity.sourceIp",
+    "user-agent" : "$context.identity.userAgent",
+    "resource-path" : "$context.resourcePath"
+  }
+  }'
+
+functions:
+  manager:
+    timeout: 10
+    handler: src/exitManager/index.handler
+    name: exit-market-${opt:stage}-manager
+    environment:
+      TABLE_NAME: ${self:custom.table}
+      NODE_URL: ${env:NODE_URL}
+      MARKET_CONFIG: ${env:MARKET_CONFIG}
+      ENV: ${opt:stage}
+    events:
+      - http:
+          method: post
+          path: /sellExit
+          integration: lambda
+          cors: true
+          request:
+            passThrough: WHEN_NO_TEMPLATES
+            template: *request_template
+          response: *response_mappings
+      - http:
+          method: get
+          path: /exits/{account}/{color}
+          integration: lambda
+          cors: true
+          request:
+            parameters:
+              paths:
+                account: true
+                color: false
+            passThrough: WHEN_NO_TEMPLATES
+            template: *request_template
+          response: *response_mappings
+      - http:
+          method: get
+          path: /deals
+          integration: lambda
+          cors: true
+          request:
+            passThrough: WHEN_NO_TEMPLATES
+            template: *request_template
+          response: *response_mappings
+      - http:
+          method: post
+          path: /directSell
+          integration: lambda
+          cors: true
+          request:
+            passThrough: WHEN_NO_TEMPLATES
+            template: *request_template
+          response: *response_mappings
+
+  finalizer:
+    timeout: 30
+    handler: src/exitFinalizer/index.handler
+    name: exit-market-${opt:stage}-finalizer
+    environment:
+      TABLE_NAME: ${self:custom.table}
+      NODE_URL: ${env:NODE_URL}
+      MARKET_CONFIG: ${env:MARKET_CONFIG}
+      ENV: ${opt:stage}
+    events:
+      - schedule: rate(3 minutes)
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+
+resources:
+  Resources:
+    # Reference: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html
+    exitMarketTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.table}
+        AttributeDefinitions:
+          - AttributeName: utxoId
+            AttributeType: S
+          - AttributeName: color
+            AttributeType: N          
+          - AttributeName: effectiveBlock
+            AttributeType: N          
+          - AttributeName: account
+            AttributeType: S
+          - AttributeName: finalized
+            AttributeType: N
+        KeySchema:
+          - AttributeName: utxoId
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: "block-index"
+            KeySchema:
+              - AttributeName: "color"
+                KeyType: "HASH"
+              - AttributeName: "effectiveBlock"
+                KeyType: "RANGE"
+            Projection:
+              NonKeyAttributes:
+                - "utxoId"
+                - "finalized"
+                - "txHash"
+                - "data"
+              ProjectionType: "INCLUDE"
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+          - IndexName: "account-index"
+            KeySchema:
+              - AttributeName: "account"
+                KeyType: "HASH"
+              - AttributeName: "finalized"
+                KeyType: "RANGE"
+            Projection:
+              NonKeyAttributes:
+                - "utxoId"
+                - "color"
+                - "effectiveBlock"
+                - "value"
+              ProjectionType: "INCLUDE"
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1

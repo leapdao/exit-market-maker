@@ -6,25 +6,16 @@ module.exports = {
   target: 'node',
   plugins: [],
   module: {
-    loaders: [
+    rules: [
       {
-        test: /\.js?$/,
-        loader: 'babel-loader',
-        exclude: /node_modules/,
-        query: {
-          presets: ['es2015', 'stage-0'],
-          plugins: [
-            'transform-runtime',
-            'transform-async-to-generator',
-            'transform-class-properties',
-            [
-              'babel-plugin-transform-builtin-extend',
-              { globals: ['Error', 'Array'] },
-            ],
-          ],
+        test: /\.js$/,
+        use: {
+          loader: '@sucrase/webpack-loader',
+          options: {
+            transforms: ['imports'],
+          },
         },
       },
-      { test: /\.js$/, include: /node_modules\/fsevents/, use: ['shebang-loader'] },
     ],
   },
   output: {
