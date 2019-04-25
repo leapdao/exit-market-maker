@@ -152,6 +152,15 @@ functions:
             passThrough: WHEN_NO_TEMPLATES
             template: *request_template
           response: *response_mappings
+      - http:
+          method: post
+          path: /directSell
+          integration: lambda
+          cors: true
+          request:
+            passThrough: WHEN_NO_TEMPLATES
+            template: *request_template
+          response: *response_mappings
 
   finalizer:
     timeout: 30
@@ -163,7 +172,7 @@ functions:
       MARKET_CONFIG: ${env:MARKET_CONFIG}
       ENV: ${opt:stage}
     events:
-      - schedule: rate(1 minute)
+      - schedule: rate(3 minutes)
 
 plugins:
   - serverless-webpack
