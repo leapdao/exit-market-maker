@@ -60,8 +60,6 @@ class ExitFinalizer {
 
   async sellExit(exit) {
     console.log('Finalizing fast exit', exit);
-    const slotId = 0; // TODO: any slot
-    const { signer } = await this.operator.slots(slotId);
 
     const { inputTx, signedData } = exit.data;
     const exitingTx = exit.data.tx;
@@ -72,8 +70,8 @@ class ExitFinalizer {
       getBlock: (num, includeTxs) =>
         this.plasma.send('eth_getBlockByNumber', [num, includeTxs]),
     };
-    const txProof = await getProof(blockProvider, exitingTx, 0, signer);
-    const inputProof = await getProof(blockProvider, inputTx, 0, signer);
+    const txProof = await getProof(blockProvider, exitingTx);
+    const inputProof = await getProof(blockProvider, inputTx);
 
     const outputIndex = 0;
     const inputIndex = 0;
