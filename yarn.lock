@@ -3185,7 +3185,7 @@ lcid@^1.0.0:
   dependencies:
     invert-kv "^1.0.0"
 
-leap-core@^0.28.1, leap-core@^0.28.4:
+leap-core@^0.28.1:
   version "0.28.4"
   resolved "https://registry.yarnpkg.com/leap-core/-/leap-core-0.28.4.tgz#fabe3609ec1d19cbeebf96f3a030de070cc49969"
   integrity sha512-qMWhAL+3//2rllZJr6XOJI+zb3SPXiGOjk3GoUJJG049zCt+csxKUHfqfOjTNEBnvwzfZCBRZnAg82coOXsikQ==
@@ -3194,6 +3194,16 @@ leap-core@^0.28.1, leap-core@^0.28.4:
     babel-polyfill "^6.26.0"
     ethereumjs-util "6.0.0"
     jsbi-utils "^1.0.0"
+
+leap-core@^0.35.0:
+  version "0.35.0"
+  resolved "https://registry.yarnpkg.com/leap-core/-/leap-core-0.35.0.tgz#89d5a470a37a355a843647840a3f6ffdd5a99f79"
+  integrity sha512-q8VKCXtbFVCUEkAbQp4YE+8aZ8lxXc9zOQGxwZ2M/6eRysXVzloywcD7/T2zJG+nvaw4xg7+kGxgaDEiaZrORA==
+  dependencies:
+    "@types/web3" "^1.0.18"
+    ethereumjs-util "6.0.0"
+    jsbi-utils "^1.0.0"
+    node-fetch "^2.3.0"
 
 leap-guardian@^1.2.0:
   version "1.2.0"
