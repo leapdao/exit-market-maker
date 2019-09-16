@@ -17,7 +17,7 @@
     "bignumber.js": "^8.0.2",
     "chai": "latest",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^3.10.0",
+    "eslint": "^4.18.2",
     "eslint-config-airbnb": "^13.0.0",
     "eslint-config-airbnb-base": "^11.1.2",
     "eslint-config-standard": "^7.1.0",
