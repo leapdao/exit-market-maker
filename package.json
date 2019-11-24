@@ -39,8 +39,8 @@
     "ethereumjs-util": "^6.0.0",
     "ethers": "^4.0.27",
     "jsbi-utils": "^1.0.1",
-    "leap-core": "^0.35.0",
-    "leap-guardian": "^1.2.0",
+    "leap-core": "^0.38.0",
+    "leap-guardian": "^1.3.0",
     "leap-lambda-boilerplate": "^1.3.0",
     "node-fetch": "^2.3.0"
   }
