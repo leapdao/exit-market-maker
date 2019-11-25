@@ -10,7 +10,7 @@ import { ethers } from 'ethers';
 import { Properties } from 'leap-lambda-boilerplate';
 
 import wallet from 'leap-guardian/scripts/utils/wallet';
-import { operatorAbi, exitHandlerAbi } from 'leap-guardian/abis';
+import { operatorAbi, exitHandlerAbi, bridgeAbi } from 'leap-guardian/abis';
 
 import ExitFinalizer from './exitFinalizer';
 import Db from '../db';
@@ -28,15 +28,17 @@ exports.handler = async () => {
 
   if (!finalizer) {
     const { plasmaWallet, rootWallet, nodeConfig } = await wallet({ nodeUrl, privKey });
-    const { exitHandlerAddr, operatorAddr } = nodeConfig;
+    const { exitHandlerAddr, operatorAddr, bridgeAddr } = nodeConfig;
     const exitHandler = new ethers.Contract(exitHandlerAddr, exitHandlerAbi, rootWallet);
     const operator = new ethers.Contract(operatorAddr, operatorAbi, rootWallet);
+    const bridge = new ethers.Contract(bridgeAddr, bridgeAbi, rootWallet);
 
     finalizer = new ExitFinalizer(
       rate,
       handlerAddr,
       exitHandler,
       operator,
+      bridge,
       rootWallet,
       plasmaWallet.provider,
       new Db(tableName),

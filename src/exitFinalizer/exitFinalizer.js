@@ -17,11 +17,16 @@ const { getProof } = helpers;
 const { BadRequest, ServerError } = Errors;
 
 class ExitFinalizer {
+<<<<<<< HEAD
   constructor(rate, senderAddr, exitHandler, operator, root, plasma, db, marketConfig) {
+=======
+  constructor(rate, senderAddr, exitHandler, operator, bridge, root, plasma, db, marketConfig) {
+>>>>>>> feat: check if period is submitted before submitting fast exit
     this.rate = rate;
     this.senderAddr = senderAddr;
     this.exitHandler = exitHandler;
     this.operator = operator;
+    this.bridge = bridge;
     this.db = db;
     this.root = root;
     this.plasma = plasma;
@@ -76,6 +81,12 @@ class ExitFinalizer {
     const fallbackPeriodData = { slotId, validatorAddress: signer };
 
     const txProof = await getProof(this.plasma, exitingTx, fallbackPeriodData);
+
+    const [height] = await this.bridge.periods(txProof[0]);
+    if (!height) {
+      throw new Error('Period for exiting tx is not submitted yet');
+    }
+
     const inputProof = await getProof(this.plasma, inputTx, fallbackPeriodData);
 
     const outputIndex = 0;
