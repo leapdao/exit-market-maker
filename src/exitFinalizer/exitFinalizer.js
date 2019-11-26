@@ -36,7 +36,9 @@ class ExitFinalizer {
     const result = {};
 
     await Promise.all(this.marketConfig.map(async (market) => {
-      const exits = await this.db.getProvableExits(market.color, latestBlock);
+      const exits = (
+        await this.db.getProvableExits(market.color, latestBlock)
+      ).sort(a => (!a.txHash ? -1 : 1)); // new first
       console.log('Sold exits to process:', exits.length);
 
       result[market.color] = { total: exits.length, done: 0 };
