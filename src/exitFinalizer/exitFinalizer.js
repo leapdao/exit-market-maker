@@ -17,7 +17,6 @@ const { getProof } = helpers;
 const { BadRequest, ServerError } = Errors;
 
 class ExitFinalizer {
-
   constructor(rate, senderAddr, exitHandler, operator, root, plasma, db, marketConfig) {
     this.rate = rate;
     this.senderAddr = senderAddr;
@@ -64,14 +63,12 @@ class ExitFinalizer {
     const { inputTx, signedData } = exit.data;
     const exitingTx = exit.data.tx;
 
-    // workaround for https://github.com/leapdao/leap-node/issues/236
-    // TODO: remove and use this.plasma once the issue is fixed and deployed
-    const blockProvider = {
-      getBlock: (num, includeTxs) =>
-        this.plasma.send('eth_getBlockByNumber', [num, includeTxs]),
-    };
-    const txProof = await getProof(blockProvider, exitingTx);
-    const inputProof = await getProof(blockProvider, inputTx);
+    const slotId = 0;
+    const { signer } = await this.operator.slots(slotId);
+    const fallbackPeriodData = { slotId, validatorAddress: signer };
+
+    const txProof = await getProof(this.plasma, exitingTx, fallbackPeriodData);
+    const inputProof = await getProof(this.plasma, inputTx, fallbackPeriodData);
 
     const outputIndex = 0;
     const inputIndex = 0;
@@ -113,7 +110,6 @@ class ExitFinalizer {
       { value: exitStake, gasLimit: 350000 },
     );
   }
-
 }
 
 export default ExitFinalizer;
