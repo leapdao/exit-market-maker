@@ -163,7 +163,7 @@ functions:
           response: *response_mappings
 
   finalizer:
-    timeout: 30
+    timeout: 120
     handler: src/exitFinalizer/index.handler
     name: exit-market-${opt:stage}-finalizer
     environment:
