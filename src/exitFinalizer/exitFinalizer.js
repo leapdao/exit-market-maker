@@ -45,11 +45,17 @@ class ExitFinalizer {
 
       for (let i = 0; i < exits.length; i += 1) {
         const exit = exits[i];
-        await this.sellExit(exit).then((rsp) => { // eslint-disable-line no-await-in-loop
-          console.log('Processed sold exit:', exit.utxoId, rsp);
-          result[market.color].done += 1;
-          return this.db.setAsFinalized(exit.utxoId, rsp.hash);
-        }).catch(e => console.error(e));
+        await this.sellExit(exit) // eslint-disable-line no-await-in-loop
+          .then(rsp => rsp.wait())
+          .then((rsp) => {
+            if (!rsp.status) {
+              console.error('Error finalizing', rsp);
+              return;
+            }
+            console.log('Processed sold exit:', exit.utxoId, rsp);
+            result[market.color].done += 1;
+            this.db.setAsFinalized(exit.utxoId, rsp.transactionHash);
+          }).catch(console.error);
       }
     }));
 
