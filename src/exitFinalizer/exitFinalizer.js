@@ -17,11 +17,7 @@ const { getProof } = helpers;
 const { BadRequest, ServerError } = Errors;
 
 class ExitFinalizer {
-<<<<<<< HEAD
-  constructor(rate, senderAddr, exitHandler, operator, root, plasma, db, marketConfig) {
-=======
   constructor(rate, senderAddr, exitHandler, operator, bridge, root, plasma, db, marketConfig) {
->>>>>>> feat: check if period is submitted before submitting fast exit
     this.rate = rate;
     this.senderAddr = senderAddr;
     this.exitHandler = exitHandler;

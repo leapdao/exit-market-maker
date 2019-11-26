@@ -13,7 +13,6 @@ import fetch from 'node-fetch';
 import getToken from '../common/getToken';
 
 class ExitManager {
-
   constructor(db, marketConfig, exitHandler, rootWallet, plasmaWallet) {
     this.db = db;
     this.marketConfig = marketConfig;
