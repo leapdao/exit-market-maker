@@ -35,7 +35,7 @@
     "webpack": "^3.3.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.437.0",
+    "aws-sdk": "^2.814.0",
     "ethereumjs-util": "^6.0.0",
     "ethers": "^4.0.27",
     "jsbi-utils": "^1.0.1",
