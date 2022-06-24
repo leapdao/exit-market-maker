@@ -42,6 +42,6 @@
     "leap-core": "^0.38.0",
     "leap-guardian": "^1.3.0",
     "leap-lambda-boilerplate": "^1.3.0",
-    "node-fetch": "^2.3.0"
+    "node-fetch": "^2.6.7"
   }
 }
